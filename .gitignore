@@ -1,0 +1,10 @@
+/node_modules
+/build
+/out
+.next
+.swc
+.vscode
+.DS_Store
+*.local
+package-lock.json
+test
