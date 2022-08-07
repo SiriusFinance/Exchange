@@ -1,20 +1,11 @@
 import memoize from 'memoizee'
 import { IS_DEV } from '../constants/AppConstants'
 
-const formatJsonSuccess = data => ({
-  success: true,
-  data
-})
+const formatJsonSuccess = data => ({ ok: true, data })
 
-const formatJsonError = err => ({
-  success: false,
-  err: err.toString ? err.toString() : err
-})
+const formatJsonError = err => ({ ok: false, err: err.toString?.() || err })
 
-const addGeneratedTime = async res => ({
-  ...(await res),
-  generatedTimeMs: +Date.now()
-})
+const addGeneratedTime = async res => ({ ...(await res), generatedTimeMs: +Date.now() })
 
 const fn = (cb, options = {}) => {
   const {
@@ -38,7 +29,7 @@ const fn = (cb, options = {}) => {
       })
       .catch(err => {
         if (IS_DEV) throw err
-        else res.status(500).json(formatJsonError(err))
+        res.status(500).json(formatJsonError(err))
       })
 
   apiCall.straightCall = callback
