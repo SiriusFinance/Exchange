@@ -2,7 +2,7 @@ import { utils, constants } from 'ethers'
 const { parseUnits, formatUnits } = utils
 const { Zero } = constants
 import moment from 'moment'
-import { pairs, graphUrl } from '/constants'
+import { pairs, GRAPH_URL } from '/constants'
 import { fn, getCoinIndex, getCoinDecimals, castTo18 } from '/utils'
 
 const getTicker = async ticker_id => {
@@ -38,7 +38,7 @@ const getTicker = async ticker_id => {
       swap { id }
     }
   }`
-  const result = await (await fetch(graphUrl, { method: 'POST', body: JSON.stringify({ query }) })).json()
+  const result = await (await fetch(GRAPH_URL, { method: 'POST', body: JSON.stringify({ query }) })).json()
   const tokenExchanges = result?.data?.tokenExchanges
   if (!tokenExchanges?.length) return ticker
 
