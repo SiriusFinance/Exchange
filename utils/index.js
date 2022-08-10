@@ -1,6 +1,6 @@
 import { utils } from 'ethers'
 const { parseUnits } = utils
-import { pools, coins } from '../constants'
+import { pools, coins } from '/constants'
 
 export * from './api'
 

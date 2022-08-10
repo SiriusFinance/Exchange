@@ -2,8 +2,8 @@ import { utils, constants } from 'ethers'
 const { parseUnits, formatUnits } = utils
 const { Zero } = constants
 import moment from 'moment'
-import { pairs, graphUrl } from '../../../constants'
-import { fn, getCoinIndex, getCoinDecimals, castTo18 } from '../../../utils'
+import { pairs, graphUrl } from '/constants'
+import { fn, getCoinIndex, getCoinDecimals, castTo18 } from '/utils'
 
 const getTicker = async ticker_id => {
   if (!ticker_id) throw 'ticker_id is required'

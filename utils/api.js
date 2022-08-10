@@ -1,5 +1,5 @@
 import memoize from 'memoizee'
-import { IS_DEV } from '../constants/AppConstants'
+import { IS_DEV } from '/constants/AppConstants'
 
 const formatJsonSuccess = data => ({ ok: true, data })
 
