@@ -1,3 +1,5 @@
+[TOC]
+
 # List of Endpoints
 
 Base URL: https://api.sirius.finance/
