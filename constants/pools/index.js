@@ -11,15 +11,6 @@ const pools = [
     coins: stableCoins
   },
   {
-    name: 'Starlay 4Pool',
-    addresses: {
-      lpToken: '0x39399F42f700De9d547c6cF936a39046863764a3',
-      swap: '0x0fB8C4eB33A30eBb01588e3110968430E3E69D58',
-      gauge: '0x1026F7B0f4A79C9caE3715035730419740A858FD'
-    },
-    coins: [coins.ldai, coins.lusdc, coins.lusdt, coins.lbusd]
-  },
-  {
     name: 'nASTR/ASTR Pool',
     addresses: {
       lpToken: '0xcB274236fBA7B873FC8F154bb0475a166C24B119',

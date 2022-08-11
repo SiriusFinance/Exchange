@@ -28,35 +28,6 @@ export const coins = {
     decimals: 18,
     address: '0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E'
   },
-  // starlay
-  ldai: {
-    id: 'ldai',
-    geckoId: 'dai',
-    symbol: 'lDAI',
-    decimals: 18,
-    address: '0x4dd9c468A44F3FEF662c35c1E9a6108B70415C2c'
-  },
-  lusdc: {
-    id: 'lusdc',
-    geckoId: 'usd-coin',
-    symbol: 'lUSDC',
-    decimals: 18,
-    address: '0xc404e12d3466accb625c67dbab2e1a8a457def3c'
-  },
-  lusdt: {
-    id: 'lusdt',
-    geckoId: 'tether',
-    symbol: 'lUSDT',
-    decimals: 18,
-    address: '0x430D50963d9635bBef5a2fF27BD0bDDc26ed691F'
-  },
-  lbusd: {
-    id: 'lbusd',
-    geckoId: 'binance-usd',
-    symbol: 'lBUSD',
-    decimals: 18,
-    address: '0xb7aB962c42A8Bb443e0362f58a5A43814c573FFb'
-  },
   astr: {
     id: 'astr',
     geckoId: 'astar',

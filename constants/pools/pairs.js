@@ -12,19 +12,6 @@ const pairs = [
     pool_id: '0x417E9d065ee22DFB7CC6C63C403600E27627F333',
     ticker_id: 'BUSD_USDC'
   },
-  // Starlay 4Pool
-  {
-    pool_id: '0x0fB8C4eB33A30eBb01588e3110968430E3E69D58',
-    ticker_id: 'lDAI_lUSDC'
-  },
-  {
-    pool_id: '0x0fB8C4eB33A30eBb01588e3110968430E3E69D58',
-    ticker_id: 'lUSDT_lUSDC'
-  },
-  {
-    pool_id: '0x0fB8C4eB33A30eBb01588e3110968430E3E69D58',
-    ticker_id: 'lBUSD_lUSDC'
-  },
   // nASTR/ASTR Pool
   {
     pool_id: '0xEEa640c27620D7C448AD655B6e3FB94853AC01e3',
