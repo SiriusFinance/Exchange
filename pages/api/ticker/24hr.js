@@ -16,7 +16,7 @@ const getTicker = async ticker_id => {
   const target_id = getCoinIndex(pool_id, pair.target)
 
   let ticker = {
-    pool_id,
+    pool_id: pair.pool_id,
     ticker_id,
     base_currency: pair.base,
     target_currency: pair.target

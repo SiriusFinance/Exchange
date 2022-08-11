@@ -24,7 +24,7 @@ const leaderboard = memoize(
       const page = ~~(cnt / LIMIT)
       for (let i = 1; i <= page; i++) offsets.push(i * LIMIT)
       const res = await Promise.all(offsets.map(offset => getSquid(`{ veHolders(offset: ${offset}, limit: ${LIMIT}) { id } }`)))
-      res.map(i => (idList = idList.contat(i?.data?.veHolders || [])))
+      res.map(i => (idList = idList.concat(i?.data?.veHolders || [])))
     }
 
     const list = []
