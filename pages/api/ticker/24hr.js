@@ -2,8 +2,8 @@ import { utils, constants } from 'ethers'
 const { parseUnits, formatUnits } = utils
 const { Zero } = constants
 import moment from 'moment'
-import { pairs, GRAPH_URL } from '/constants'
-import { fn, getCoinIndex, getCoinDecimals, castTo18 } from '/utils'
+import { pairs } from '/constants'
+import { fn, getCoinIndex, getCoinDecimals, castTo18, getGraph } from '/utils'
 
 const getTicker = async ticker_id => {
   if (!ticker_id) throw 'ticker_id is required'
@@ -24,25 +24,29 @@ const getTicker = async ticker_id => {
 
   const yesterday = moment().subtract(1, 'd').unix()
   const query = `{
-    tokenExchanges(orderBy: timestamp, orderDirection: desc, first: 1000, where: {
-      swap: "${pool_id}",
-      soldId: ${base_id},
-      boughtId: ${target_id},
-      timestamp_gte: ${yesterday}
+    exchanges(orderBy: timestamp_DESC, limit: 1000, where: {
+      timestamp_gte: ${yesterday},
+      swap: {id_eq: "${pool_id}" },
+      data: { soldId_eq: ${base_id}, boughtId_eq: ${target_id} },
     }) {
-      soldId
-      boughtId
-      tokensSold
-      tokensBought
       timestamp
       swap { id }
+      data {
+        ... on TokenExchangeData {
+          boughtId
+          soldId
+          tokensSold
+          tokensBought
+        }
+      }
     }
   }`
-  const result = await (await fetch(GRAPH_URL, { method: 'POST', body: JSON.stringify({ query }) })).json()
-  const tokenExchanges = result?.data?.tokenExchanges
-  if (!tokenExchanges?.length) return ticker
+  const result = await getGraph(query)
 
-  const { tokensSold, tokensBought } = tokenExchanges[0]
+  const exchanges = result?.data?.exchanges
+  if (!exchanges?.length) return ticker
+
+  const { tokensSold, tokensBought } = exchanges[0].data
   const decimal0 = getCoinDecimals(pair.base)
   const decimal1 = getCoinDecimals(pair.target)
 
@@ -55,9 +59,9 @@ const getTicker = async ticker_id => {
   let high = Zero
   let low = null
 
-  tokenExchanges.map(i => {
-    const base_bn = castTo18(i.tokensSold, decimal0)
-    const target_bn = castTo18(i.tokensBought, decimal1)
+  exchanges.map(i => {
+    const base_bn = castTo18(i.data.tokensSold, decimal0)
+    const target_bn = castTo18(i.data.tokensBought, decimal1)
     base_volume = base_volume.add(base_bn)
     target_volume = target_volume.add(target_bn)
     const price = base_bn.isZero() ? Zero : parseUnits('1').mul(target_bn).div(base_bn)

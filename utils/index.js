@@ -1,6 +1,6 @@
 import { utils } from 'ethers'
 const { parseUnits } = utils
-import { pools, coins, SQUID_URL } from '/constants'
+import { pools, coins, SQUID_URL, GRAPH_URL } from '/constants'
 
 export * from './api'
 
@@ -25,6 +25,15 @@ export const castTo18 = (bn, decimals) =>
 export const getSquid = async query =>
   await (
     await fetch(SQUID_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query })
+    })
+  ).json()
+
+export const getGraph = async query =>
+  await (
+    await fetch(GRAPH_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query })
