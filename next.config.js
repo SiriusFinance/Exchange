@@ -9,5 +9,14 @@ module.exports = {
         ]
       }
     ]
+  },
+  async redirects() {
+    return [
+      {
+        source: '/symbol_detail',
+        destination: '/symbol_detail/BTC',
+        permanent: false
+      }
+    ]
   }
 }
