@@ -4,6 +4,15 @@ import { useState, useEffect } from 'react'
 import detailList from '../../constants/coins/detail'
 import styles from './symbol.module.scss'
 
+function ExternalLink({ url }) {
+  if (!url) return '--'
+  return (
+    <a href={url} target="_blank" rel="noreferrer" className={styles.url}>
+      {url}
+    </a>
+  )
+}
+
 export default function Page() {
   const router = useRouter()
   const { symbol } = router.query
@@ -19,19 +28,21 @@ export default function Page() {
       </Head>
 
       <div className={styles.container}>
-        <ul className={styles.list}>
-          {Object.values(detailList).map((i, index) => (
-            <li className={`${styles.item} ${i.symbol == symbol ? styles.itemActive : ''}`} key={index} onClick={() => goPage(i.symbol)}>
-              {i.symbol}
-              {i.name && ` (${i.name})`}
-            </li>
-          ))}
-        </ul>
-        <div className={styles.rightbar}>
-          <div className={styles.title}>
+        <aside className={styles.leftbar}>
+          <ul className={styles.list}>
+            {Object.values(detailList).map((i, index) => (
+              <li className={`${styles.item} ${i.symbol == symbol ? styles.itemActive : ''}`} key={index} onClick={() => goPage(i.symbol)}>
+                {i.symbol}
+                {i.name && ` (${i.name})`}
+              </li>
+            ))}
+          </ul>
+        </aside>
+        <main className={styles.rightbar}>
+          <h1 className={styles.title}>
             {info.symbol}
             {info.name && ` (${info.name})`}
-          </div>
+          </h1>
           <div className={styles.field}>
             <div className={styles.label}>Issue Time</div>
             <div className={styles.val}>{info.issueTime || '--'}</div>
@@ -46,18 +57,18 @@ export default function Page() {
           </div>
           <div className={styles.field}>
             <div className={styles.label}>White paper</div>
-            <div className={styles.val}>{info.whitePaper || '--'}</div>
+            <ExternalLink url={info.whitePaper} />
           </div>
           <div className={styles.field}>
             <div className={styles.label}>Website</div>
-            <div className={styles.val}>{info.website || '--'}</div>
+            <ExternalLink url={info.website} />
           </div>
           <div className={styles.field}>
             <div className={styles.label}>Block Explorer</div>
-            <div className={styles.val}>{info.blockExplorer || '--'}</div>
+            <ExternalLink url={info.blockExplorer} />
           </div>
           {info.desc && <div className={styles.desc}>{info.desc}</div>}
-        </div>
+        </main>
       </div>
     </>
   )

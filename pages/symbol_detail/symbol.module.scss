@@ -1,20 +1,28 @@
+@import '/styles/variables';
+
 .container {
-  background: #09263c;
+  display: flex;
   max-width: 1200px;
   min-width: 600px;
   margin: 80px auto;
-  color: white;
-  display: flex;
+  color: $color3;
+  background-color: $bg3;
 }
 
+.leftbar {
+  max-height: calc(100vh - 160px);
+  background: linear-gradient(45deg, rgba(black, 0.02) 2%, rgba(white, 0.05) 100%);
+}
 .list {
+  height: 100%;
   list-style: none;
-  padding: 24px;
   margin: 0;
-  background: linear-gradient(46.03deg, rgba(#000, 0.02) 1.74%, rgba(white, 0.05) 100%);
+  padding: 24px 0;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 .item {
-  padding: 16px 8px;
+  padding: 16px 32px;
   white-space: nowrap;
   cursor: pointer;
   &Active,
@@ -33,23 +41,28 @@
   margin-bottom: 40px;
 }
 .field {
-  font-size: 12px;
-  margin-bottom: 12px;
   display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+  font-size: 14px;
 }
 .label {
   min-width: 150px;
-  color: rgba(#ddedff, 0.5);
+  font-size: 12px;
+  color: rgba($color3, 0.6);
 }
 .val {
-  color: rgba(#ddedff, 0.95);
+  color: $color3;
+  word-break: break-word;
+}
+.url {
   word-break: break-word;
 }
 .desc {
-  border-top: 1px solid rgba(white, 0.05);
   margin-top: 40px;
   padding-top: 24px;
-  color: rgba(#ddedff, 0.5);
+  border-top: 1px solid rgba(white, 0.05);
+  color: rgba($color3, 0.6);
   font-size: 12px;
   line-height: 18px;
 }
