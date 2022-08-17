@@ -18,5 +18,13 @@ module.exports = {
         permanent: false
       }
     ]
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/market/ticker',
+        destination: 'https://www.mexc.com/open/api/v2/market/ticker'
+      }
+    ]
   }
 }
