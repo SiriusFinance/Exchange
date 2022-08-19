@@ -63,7 +63,18 @@ export const detail = {
     whitePaper: 'https://github.com/AstarNetwork/plasmdocs/blob/master/wp/en.pdf',
     website: 'https://astar.network/',
     blockExplorer: 'https://astar.subscan.io/erc20_token/0xaeaaf0e2c81af264101b9129c00f4440ccf0f720',
-    desc: ''
+    desc: 'Astar is a dApp hub on Polkadot that supports Ethereum Virtual Machine, WebAssembly Smart Contracts, and layer 2 solutions like ZK Rollups. Astar aims to be a multi-chain smart contract platform that will support multiple blockchains and virtual machines. Shiden Network is a sister network of Astar Network and a dApp hub on Kusama.'
+  },
+  BAI: {
+    symbol: 'BAI',
+    name: 'Bai',
+    issueTime: '',
+    totalSupply: '3,289,724',
+    circulation: '3,289,724',
+    whitePaper: '',
+    website: 'https://astriddao.xyz/',
+    blockExplorer: 'https://astar.subscan.io/erc20_token/0x733ebcc6df85f8266349defd0980f8ced9b45f35',
+    desc: 'AstridDAO is a decentralized money market and multi-collateral stablecoin protocol built on Astar Network and for the Polkadot ecosystem, which allows users to borrow $BAI, a stablecoin hard-pegged to USD, against risk assets at 0% interest and minimum collateral ratio. This means you can use the value in your risk assets including $ASTR, $BTC, $ETH, $DOT, etc. without having to sell them.'
   }
 }
 export default detail
