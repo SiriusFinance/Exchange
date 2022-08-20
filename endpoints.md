@@ -105,3 +105,28 @@ Response:
   }
 }
 ```
+
+### Get volumes statistics
+
+```
+GET /api/swap/volume_stats
+```
+
+Response:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "list": [
+      {
+        "address": "0x417e9d065ee22dfb7cc6c63c403600e27627f333",
+        "last24h": "24973.25342455045449038",
+        "last7d": "281259.08508786726943578",
+        "lastMonth": "787952.709921445087457756",
+        "total": "11299206.986009009259125622"
+      }
+    ]
+  }
+}
+```
