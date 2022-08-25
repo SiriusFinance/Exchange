@@ -2,7 +2,7 @@ import memoize from 'memoizee'
 import { utils } from 'ethers'
 const { parseUnits, formatUnits } = utils
 import moment from 'moment'
-import { getSquid } from '/utils'
+import { getGraph } from '/utils'
 import { veTokenContract } from '/constants/contract'
 const LIMIT = 1000
 
@@ -14,16 +14,16 @@ const leaderboard = memoize(
       veHolders(offset: 0, limit: ${LIMIT}) { id }
       veHoldersConnection(orderBy:id_ASC) { totalCount }
     }`
-    const result = await getSquid(query)
+    const result = await getGraph(query)
     let idList = result?.data?.veHolders || []
     const cnt = result?.data?.veHoldersConnection?.totalCount || 0
     if (!cnt) return { list: [], totalCount: 0 }
 
     if (cnt > LIMIT) {
       const offsets = []
-      const page = ~~(cnt / LIMIT)
+      const page = Math.floor(cnt / LIMIT)
       for (let i = 1; i <= page; i++) offsets.push(i * LIMIT)
-      const res = await Promise.all(offsets.map(offset => getSquid(`{ veHolders(offset: ${offset}, limit: ${LIMIT}) { id } }`)))
+      const res = await Promise.all(offsets.map(offset => getGraph(`{ veHolders(offset: ${offset}, limit: ${LIMIT}) { id } }`)))
       res.map(i => (idList = idList.concat(i?.data?.veHolders || [])))
     }
 
