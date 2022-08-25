@@ -2,7 +2,7 @@ import { utils, constants } from 'ethers'
 const { parseUnits, formatUnits } = utils
 const { Zero } = constants
 import moment from 'moment'
-import { fn } from '/utils'
+import { fn, removeExtraDecimal } from '/utils'
 import { getAddresses, poolDailyVolumes } from '/utils/data/swap'
 
 export default fn(
@@ -26,12 +26,7 @@ export default fn(
         let total = Zero
 
         res.list.map(j => {
-          // Fix BN conversion error caused by decimal place greater than 18 digits
-          let num = j.volume || '0'
-          const extraDecimal = (num.split('.')[1] || '0').length - 18
-          if (extraDecimal > 0) num = num.slice(0, -extraDecimal)
-
-          const bn = parseUnits(num)
+          const bn = parseUnits(removeExtraDecimal(j.volume))
           const time = moment.unix(j.timestamp)
 
           total = total.add(bn)

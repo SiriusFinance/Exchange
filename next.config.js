@@ -24,6 +24,10 @@ module.exports = {
       {
         source: '/api/market/ticker',
         destination: 'https://www.mexc.com/open/api/v2/market/ticker'
+      },
+      {
+        source: '/api/gasnow',
+        destination: 'https://gas.astar.network/api/gasnow'
       }
     ]
   }

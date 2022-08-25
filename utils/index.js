@@ -22,6 +22,14 @@ export const castTo18 = (bn, decimals) =>
     .pow(18 - decimals)
     .mul(bn)
 
+// Fix BN conversion error caused by decimal place greater than 18 digits
+export const removeExtraDecimal = num => {
+  num = num.toString() || '0'
+  const extraDecimal = (num.split('.')[1] || '0').length - 18
+  if (extraDecimal > 0) num = num.slice(0, -extraDecimal)
+  return num
+}
+
 export const getGraph = async query =>
   await (
     await fetch(GRAPH_URL, {
