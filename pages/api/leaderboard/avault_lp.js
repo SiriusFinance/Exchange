@@ -3,7 +3,7 @@ import { fn } from '/utils'
 import avaultLp from '/utils/data/leaderboard/avault_lp'
 
 export default fn(
-  async ({ timestamp, offset, limit, all, gl0 }) => {
+  async ({ timestamp, offset, limit, all, gt0 }) => {
     timestamp = +timestamp || moment().unix()
     offset = +offset || 0
     limit = +limit || 100
@@ -15,7 +15,7 @@ export default fn(
     if (all) list = res.list
 
     // greater than 0
-    if (gl0) {
+    if (gt0) {
       const index = res.list.findIndex(i => i.balance == '0')
       if (index > -1) totalCount = index + 1
       const index2 = list.findIndex(i => i.balance == '0')

@@ -3,7 +3,7 @@ import { fn } from '/utils'
 import veLdb from '/utils/data/leaderboard/ve'
 
 export default fn(
-  async ({ timestamp, offset, limit, all, gl0 }) => {
+  async ({ timestamp, offset, limit, all, gt0 }) => {
     timestamp = +timestamp || moment({ hour: new Date().getHours() }).unix()
     offset = +offset || 0
     limit = +limit || 100
@@ -15,7 +15,7 @@ export default fn(
     if (all) list = res.list
 
     // greater than 0
-    if (gl0) {
+    if (gt0) {
       const index = res.list.findIndex(i => i.balance == '0')
       if (index > -1) totalCount = index + 1
       const index2 = list.findIndex(i => i.balance == '0')
