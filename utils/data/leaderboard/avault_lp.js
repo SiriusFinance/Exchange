@@ -11,22 +11,29 @@ const avault_lp = memoize(
   async timestamp => {
     timestamp = +timestamp || moment().unix()
 
-    const qStr = offset => `
-      swapEvents(orderBy: timestamp_ASC, offset: ${offset}, limit: ${LIMIT}, where: {timestamp_lte: ${timestamp}, swap: {id_eq: "${AVAULT_ADDRESS}"}}) {
-        id
-        data {
-          ... on AddLiquidityEventData {
-            provider
-            tokenAmounts
-          }
-          ... on RemoveLiquidityEventData {
-            provider
-            tokenAmounts
-          }
+    const where = `{
+      timestamp_lte: ${timestamp},
+      swap: {id_eq: "${AVAULT_ADDRESS}"},
+      AND: {OR: [
+        {id_startsWith: "add_liquidity"}
+        {id_startsWith: "remove_liquidity"}
+      ]}
+    }`
+    const qStr = offset => `swapEvents(orderBy: timestamp_ASC, offset: ${offset}, limit: ${LIMIT}, where: ${where}) {
+      id
+      data {
+        ... on AddLiquidityEventData {
+          provider
+          tokenAmounts
         }
-      }`
+        ... on RemoveLiquidityEventData {
+          provider
+          tokenAmounts
+        }
+      }
+    }`
     const query = `{
-      swapEventsConnection(orderBy: id_ASC) { totalCount }
+      swapEventsConnection(orderBy: id_ASC, where: ${where}) { totalCount }
       ${qStr(0)}
     }`
     const result = await getGraph(query)
@@ -49,7 +56,7 @@ const avault_lp = memoize(
 
       if (i.id.startsWith('remove_liquidity')) {
         bal = i.data.tokenAmounts.reduce((sum, num) => sum.sub(parseUnits(num, 0)), bal)
-      } else {
+      } else if (i.id.startsWith('add_liquidity')) {
         bal = i.data.tokenAmounts.reduce((sum, num) => sum.add(parseUnits(num, 0)), bal)
       }
       obj[address] = bal

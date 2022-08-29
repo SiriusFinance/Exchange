@@ -27,14 +27,10 @@ const getTicker = async ticker_id => {
     exchanges(orderBy: timestamp_DESC, limit: 1000, where: {
       timestamp_gte: ${yesterday},
       swap: {id_eq: "${pool_id}" },
-      AND: {
-        OR: {
-          data: { soldId_eq: ${base_id}, boughtId_eq: ${target_id} },
-          OR: {
-            data: { soldId_eq: ${target_id}, boughtId_eq: ${base_id} }
-          }
-        }
-      }
+      AND: {OR: [
+        {data: { soldId_eq: ${base_id}, boughtId_eq: ${target_id} }}
+        {data: { soldId_eq: ${target_id}, boughtId_eq: ${base_id} }}
+      ]}
     }) {
       timestamp
       swap { id }
@@ -99,7 +95,5 @@ export default fn(
     const tickers = await Promise.all(pairs.map(i => getTicker(i.ticker_id)))
     return { tickers }
   },
-  {
-    maxAge: 60 // 1 min
-  }
+  { maxAge: 60 } // 1 min
 )
