@@ -53,11 +53,15 @@ const getTicker = async ticker_id => {
   const exchanges = result?.data?.exchanges
   if (!exchanges?.length) return ticker
 
-  const lastItem = exchanges[0].data
-  const baseIsSold = lastItem.soldId == base_id
-  const base_bn = baseIsSold ? castTo18(lastItem.tokensSold, base_decimals) : castTo18(lastItem.tokensBought, base_decimals)
-  const target_bn = baseIsSold ? castTo18(lastItem.tokensBought, target_decimals) : castTo18(lastItem.tokensSold, target_decimals)
-  const last_price = base_bn.isZero() ? Zero : parseUnits('1').mul(target_bn).div(base_bn)
+  const getVolumeAndPrice = data => {
+    const baseIsSold = data.soldId == base_id
+    const base_bn = baseIsSold ? castTo18(data.tokensSold, base_decimals) : castTo18(data.tokensBought, base_decimals)
+    const target_bn = baseIsSold ? castTo18(data.tokensBought, target_decimals) : castTo18(data.tokensSold, target_decimals)
+    const price = base_bn.isZero() ? Zero : parseUnits('1').mul(target_bn).div(base_bn)
+    return [base_bn, target_bn, price]
+  }
+
+  const [last_base, last_target, last_price] = getVolumeAndPrice(exchanges[0].data)
 
   let base_volume = Zero
   let target_volume = Zero
@@ -65,12 +69,9 @@ const getTicker = async ticker_id => {
   let low = null
 
   exchanges.map(i => {
-    const baseIsSold = i.data.soldId == base_id
-    const base_bn = baseIsSold ? castTo18(i.data.tokensSold, base_decimals) : castTo18(i.data.tokensBought, base_decimals)
-    const target_bn = baseIsSold ? castTo18(i.data.tokensBought, target_decimals) : castTo18(i.data.tokensSold, target_decimals)
+    const [base_bn, target_bn, price] = getVolumeAndPrice(i.data)
     base_volume = base_volume.add(base_bn)
     target_volume = target_volume.add(target_bn)
-    const price = base_bn.isZero() ? Zero : parseUnits('1').mul(target_bn).div(base_bn)
     if (price.gt(high)) high = price
     if (!low || price.lt(low)) low = price
   })
