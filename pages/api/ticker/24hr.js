@@ -78,6 +78,8 @@ const getTicker = async ticker_id => {
     last_price: formatUnits(last_price),
     base_volume: formatUnits(base_volume),
     target_volume: formatUnits(target_volume),
+    base_decimals: 18,
+    target_decimals: 18,
     high: formatUnits(high),
     low: formatUnits(low)
   }
