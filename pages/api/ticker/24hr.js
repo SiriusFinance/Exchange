@@ -14,12 +14,16 @@ const getTicker = async ticker_id => {
   const pool_id = pair.pool_id.toLowerCase()
   const base_id = getCoinIndex(pool_id, pair.base)
   const target_id = getCoinIndex(pool_id, pair.target)
+  const base_decimals = getCoinDecimals(pair.base)
+  const target_decimals = getCoinDecimals(pair.target)
 
   let ticker = {
     pool_id: pair.pool_id,
     ticker_id,
     base_currency: pair.base,
-    target_currency: pair.target
+    target_currency: pair.target,
+    base_decimals,
+    target_decimals
   }
 
   const yesterday = moment().subtract(1, 'd').unix()
@@ -49,12 +53,10 @@ const getTicker = async ticker_id => {
   const exchanges = result?.data?.exchanges
   if (!exchanges?.length) return ticker
 
-  const { tokensSold, tokensBought } = exchanges[0].data
-  const decimal0 = getCoinDecimals(pair.base)
-  const decimal1 = getCoinDecimals(pair.target)
-
-  const base_bn = castTo18(tokensSold, decimal0)
-  const target_bn = castTo18(tokensBought, decimal1)
+  const lastItem = exchanges[0].data
+  const baseIsSold = lastItem.soldId == base_id
+  const base_bn = baseIsSold ? castTo18(lastItem.tokensSold, base_decimals) : castTo18(lastItem.tokensBought, base_decimals)
+  const target_bn = baseIsSold ? castTo18(lastItem.tokensBought, target_decimals) : castTo18(lastItem.tokensSold, target_decimals)
   const last_price = base_bn.isZero() ? Zero : parseUnits('1').mul(target_bn).div(base_bn)
 
   let base_volume = Zero
@@ -63,8 +65,9 @@ const getTicker = async ticker_id => {
   let low = null
 
   exchanges.map(i => {
-    const base_bn = castTo18(i.data.tokensSold, decimal0)
-    const target_bn = castTo18(i.data.tokensBought, decimal1)
+    const baseIsSold = i.data.soldId == base_id
+    const base_bn = baseIsSold ? castTo18(i.data.tokensSold, base_decimals) : castTo18(i.data.tokensBought, base_decimals)
+    const target_bn = baseIsSold ? castTo18(i.data.tokensBought, target_decimals) : castTo18(i.data.tokensSold, target_decimals)
     base_volume = base_volume.add(base_bn)
     target_volume = target_volume.add(target_bn)
     const price = base_bn.isZero() ? Zero : parseUnits('1').mul(target_bn).div(base_bn)
@@ -78,8 +81,6 @@ const getTicker = async ticker_id => {
     last_price: formatUnits(last_price),
     base_volume: formatUnits(base_volume),
     target_volume: formatUnits(target_volume),
-    base_decimals: 18,
-    target_decimals: 18,
     high: formatUnits(high),
     low: formatUnits(low)
   }
