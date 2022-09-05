@@ -5,6 +5,7 @@ import moment from 'moment'
 import { fn, getGraph, removeExtraDecimal } from '/utils'
 import { poolDailyVolumes } from '/utils/data/swap'
 import XSwapAbi from '/constants/abis/XSwap.json'
+import XSwapDepositAbi from '/constants/abis/XSwapDeposit.json'
 import { provider } from '/constants/contract'
 const FEE_DECIMALS = 10
 
@@ -16,8 +17,8 @@ const metaPools = [JPYC_METAPOOL, WBTC_METAPOOL, WETH_METAPOOL, WBNB_METAPOOL].m
 
 const getFee = async poolAddress => {
   if (!metaPools.includes(poolAddress)) return Zero
-
-  const swapContract = new Contract(poolAddress, XSwapAbi, provider)
+  const swapDepositContract = new Contract(poolAddress, XSwapDepositAbi, provider)
+  const swapContract = new Contract(await swapDepositContract.META_POOL(), XSwapAbi, provider)
   return await swapContract.fee()
 }
 
