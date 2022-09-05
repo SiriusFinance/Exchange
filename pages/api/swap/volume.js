@@ -48,7 +48,7 @@ export default fn(
         if (i.tvl == 0) {
           apy = Zero
         } else {
-          if (i.apy) {
+          if (+i.apy > 0) {
             apy = (+i.apy).toFixed(6)
           } else {
             // for crypto metapools only
