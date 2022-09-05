@@ -49,7 +49,7 @@ export default fn(
           apy = Zero
         } else {
           if (i.apy) {
-            apy = i.apy
+            apy = (i.apy).toFixed(2)
           } else {
             // for crypto metapools only
             const fee = await getFee(i.address)
