@@ -13,4 +13,4 @@ npm start
 
 ## Public API Endpoints
 
-Endpoints list and example response can be found by **[clicking here](https://github.com/curvefi/curve-api/blob/main/endpoints.md)**
+Endpoints list and example response can be found by **[clicking here](https://github.com/SiriusFinance/Exchange/blob/main/endpoints.md)**
