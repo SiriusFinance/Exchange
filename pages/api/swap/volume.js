@@ -24,7 +24,7 @@ const getFee = async poolAddress => {
 
 export default fn(
   async () => {
-    const query = '{swaps { address tvl }}'
+    const query = '{swaps { address tvl apy }}'
     const res = await getGraph(query)
     const swaps = res?.data?.swaps
     if (!swaps?.length) return { data: {} }
@@ -48,16 +48,21 @@ export default fn(
         if (i.tvl == 0) {
           apy = Zero
         } else {
-          const fee = await getFee(i.address)
-          const swapfee = last24h.mul(fee).div(parseUnits('1', FEE_DECIMALS))
-          const tvl = parseUnits(removeExtraDecimal(i.tvl))
-          apy = swapfee.mul(365).mul(parseUnits('1')).div(tvl)
+          if (i.apy) {
+            apy = i.apy
+          } else {
+            // for crypto metapools only
+            const fee = await getFee(i.address)
+            const swapfee = last24h.mul(fee).div(parseUnits('1', FEE_DECIMALS))
+            const tvl = parseUnits(removeExtraDecimal(i.tvl))
+            apy = swapfee.mul(365).mul(parseUnits('1')).div(tvl)
+          }
         }
 
         obj[i.address] = {
           oneDayVolume: formatUnits(last24h),
           TVL: i.tvl,
-          APY: formatUnits(apy)
+          APY: apy < 1 ? apy : formatUnits(apy)
         }
       })
     )
