@@ -37,7 +37,7 @@ export default fn(
         const res = await poolDailyVolumes(i.address)
 
         let last24h = Zero
-        let apy = Zero
+        let apy = i.apy ? parseUnits(removeExtraDecimal(i.apy)) : Zero
 
         res?.list?.map(j => {
           const volume = parseUnits(removeExtraDecimal(j.volume))
@@ -45,24 +45,22 @@ export default fn(
           if (time.isAfter(d1)) last24h = last24h.add(volume)
         })
 
-        if (i.tvl == 0) {
+        if (apy.gt(Zero)) {
+          // not handle
+        } else if (i.tvl == 0) {
           apy = Zero
         } else {
-          if (+i.apy > 0) {
-            apy = (+i.apy).toFixed(6)
-          } else {
-            // for crypto metapools only
-            const fee = await getFee(i.address)
-            const swapfee = last24h.mul(fee).div(parseUnits('1', FEE_DECIMALS))
-            const tvl = parseUnits(removeExtraDecimal(i.tvl))
-            apy = swapfee.mul(365).mul(parseUnits('1')).div(tvl)
-          }
+          // for crypto metapools only
+          const fee = await getFee(i.address)
+          const swapfee = last24h.mul(fee).div(parseUnits('1', FEE_DECIMALS))
+          const tvl = parseUnits(removeExtraDecimal(i.tvl))
+          apy = swapfee.mul(365).mul(parseUnits('1')).div(tvl)
         }
 
         obj[i.address] = {
           oneDayVolume: formatUnits(last24h),
           TVL: i.tvl,
-          APY: apy < 1 ? apy : formatUnits(apy)
+          APY: formatUnits(apy)
         }
       })
     )
