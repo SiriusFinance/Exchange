@@ -3,7 +3,6 @@ const { parseUnits, formatUnits } = utils
 const { Zero } = constants
 import moment from 'moment'
 import { fn, getGraph, removeExtraDecimal } from '/utils'
-import { poolDailyVolumes } from '/utils/data/swap'
 import XSwapAbi from '/constants/abis/XSwap.json'
 import XSwapDepositAbi from '/constants/abis/XSwapDeposit.json'
 import { provider } from '/constants/contract'
@@ -34,12 +33,18 @@ export default fn(
 
     await Promise.all(
       swaps.map(async i => {
-        const res = await poolDailyVolumes(i.address)
-
         let last24h = Zero
         let apy = i.apy ? parseUnits(removeExtraDecimal(i.apy)) : Zero
 
-        res?.list?.map(j => {
+        const query = `{
+          dailyVolumes(orderBy: timestamp_DESC, limit: 2, where: {swap: {id_eq: "${i.address}"}}) {
+            timestamp
+            volume
+          }
+        }`
+        const res = await getGraph(query)
+        const list = res?.data?.dailyVolumes || []
+        list.map(j => {
           const volume = parseUnits(removeExtraDecimal(j.volume))
           const time = moment.unix(j.timestamp)
           if (time.isAfter(d1)) last24h = last24h.add(volume)
@@ -52,9 +57,12 @@ export default fn(
         } else {
           // for crypto metapools only
           const fee = await getFee(i.address)
-          const swapfee = last24h.mul(fee).div(parseUnits('1', FEE_DECIMALS))
           const tvl = parseUnits(removeExtraDecimal(i.tvl))
-          apy = swapfee.mul(365).mul(parseUnits('1')).div(tvl)
+          apy = last24h
+            .mul(365)
+            .mul(fee)
+            .mul(parseUnits('1', 18 - FEE_DECIMALS))
+            .div(tvl)
         }
 
         obj[i.address] = {
