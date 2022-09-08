@@ -5,4 +5,4 @@ import coins from './coins'
 export { pools, pairs, coins }
 
 export const GRAPH_URL = 'https://squid.subsquid.io/sirius/v/v6/graphql'
-export const RPC_URL = 'https://evm.astar.network/'
+export const RPC_URL = 'https://rpc.pinknode.io/astar/7fb80172-02cb-4173-a505-91b75ccdd9f1'
