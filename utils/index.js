@@ -1,5 +1,6 @@
 import { utils } from 'ethers'
 const { parseUnits } = utils
+import moment from 'moment'
 import { pools, coins, GRAPH_URL } from '/constants'
 
 export * from './api'
@@ -38,3 +39,20 @@ export const getGraph = async query =>
       body: JSON.stringify({ query })
     })
   ).json()
+
+// Zero time of this Thursday or last Thursday
+export function getLastThursday() {
+  const now = moment().utc()
+  const day = now.day()
+  // Whether today is less than Thursday
+  const ltThu = day < 4
+  return now.subtract(ltThu ? day + 3 : day - 4, 'd').startOf('day')
+}
+
+// Zero time of this Thursday or next Thursday
+export function getUpcomingThursday() {
+  const now = moment().utc()
+  const day = now.day()
+  const ltThu = day < 4
+  return now.add((ltThu ? 4 : 11) - day, 'd').startOf('day')
+}
