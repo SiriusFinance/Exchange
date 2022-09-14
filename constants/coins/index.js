@@ -83,8 +83,17 @@ export const coins = {
     symbol: 'oUSD',
     decimals: 18,
     address: '0x29F6e49c6E3397C3A84F715885F9F233A441165C'
+  },
+  srs4: {
+    id: 'srs4',
+    geckoId: 'binance-usd',
+    symbol: '4SRS',
+    decimals: 18,
+    address: '0xB6Df5baFdcDCE7AEb49af6172143E1942999ef14'
   }
 }
 export default coins
 
 export const stableCoins = [coins.dai, coins.usdc, coins.usdt, coins.busd]
+
+export const stableSwapCoin = coins.srs4
