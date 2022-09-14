@@ -72,4 +72,13 @@ export const getCoinPrice = memoize(
   { promise: true, maxAge: ONE_MINUTE }
 )
 
+export const getSrsPrice = memoize(
+  async () => {
+    const url = 'https://api.dexscreener.com/latest/dex/pairs/astar/0xde2edaa0cd4afd59d9618c31a060eab93ce45e01'
+    const res = await (await fetch(url)).json()
+    return +res?.pair?.priceUsd || 0
+  },
+  { promise: true, maxAge: 5e3 } // 5 seconds
+)
+
 export const getTokenSymbolForPoolType = poolType => (poolType === PoolTypes.ETH ? 'WETH' : poolType === PoolTypes.USD ? 'USDC' : '')

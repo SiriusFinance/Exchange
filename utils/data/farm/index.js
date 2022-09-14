@@ -8,10 +8,12 @@ import ERC20Abi from '/constants/abis/ERC20.json'
 import metaSwapAbi from '/constants/abis/metaSwap.json'
 import cryptoMetapoolAbi from '/constants/abis/Cryptometapool.json'
 // import XTriSwapAbi from '/constants/abis/XTriSwap.json'
-import { castTo18, getLastThursday, getCoinPrice, getTokenSymbolForPoolType } from '/utils'
+import { castTo18, getLastThursday, getCoinPrice, getSrsPrice, getTokenSymbolForPoolType } from '/utils'
 import { getSwapContract } from '/utils/contract'
 const ONE_MINUTE = 6e4
 const ONE_HOUR = 36e5
+const ONE_DAY_SECS = 86400
+const ONE_YEAR_SECS = ONE_DAY_SECS * 365
 
 export const getSrsRate = memoize(async () => await srsContract?.rate(), { promise: true, maxAge: ONE_HOUR })
 
@@ -102,6 +104,63 @@ export const getLPTokenPrice = memoize(
     } catch (err) {
       console.error('getLPTokenPrice', err)
       return 0
+    }
+  },
+  { promise: true, maxAge: ONE_MINUTE }
+)
+
+export const getBaseAprData = memoize(
+  async (poolName, timestamp) => {
+    try {
+      if (!poolName) throw 'poolName is required'
+
+      const pool = pools.find(i => i.name === poolName)
+      const lpTokenAddress = pool?.addresses?.lpToken
+      const farmAddress = pool?.addresses?.gauge
+      if (!pool || !lpTokenAddress || !farmAddress) throw 'farm is not found'
+
+      const tokenContract = new Contract(lpTokenAddress, ERC20Abi, provider)
+      // bn, number, bn, bn, number
+      const [bal, lpTokenPrice, rewardRate, rewardSrsPS, srsPrice] = await Promise.all([
+        tokenContract.balanceOf(farmAddress),
+        getLPTokenPrice(poolName),
+        getGRW(farmAddress, timestamp),
+        getSrsRate(),
+        getSrsPrice()
+      ])
+
+      const tvl = bal.mul(parseUnits(String(lpTokenPrice || 1))).div(parseUnits('1'))
+
+      const rewardPerSec = rewardSrsPS
+        .mul(parseUnits(String(srsPrice)))
+        .mul(rewardRate)
+        .div(parseUnits('1', 36))
+      const rewardPerDay = rewardPerSec.mul(ONE_DAY_SECS)
+      const rewardPerYear = rewardPerSec.mul(ONE_YEAR_SECS)
+      const baseApr = tvl.isZero() ? Zero : parseUnits('1').mul(rewardPerYear).div(tvl)
+
+      const rewardSrsPerDay = rewardSrsPS.mul(rewardRate).mul(ONE_DAY_SECS).div(parseUnits('1'))
+
+      return {
+        tvl: formatUnits(tvl),
+        rewardRate: formatUnits(rewardRate),
+        rewardPerSec: formatUnits(rewardPerSec),
+        rewardPerDay: formatUnits(rewardPerDay),
+        rewardPerYear: formatUnits(rewardPerYear),
+        baseApr: formatUnits(baseApr),
+        rewardSrsPerDay: formatUnits(rewardSrsPerDay)
+      }
+    } catch (err) {
+      console.error('getBaseAprData', err)
+      return {
+        tvl: '0',
+        rewardRate: '0',
+        rewardPerSec: '0',
+        rewardPerDay: '0',
+        rewardPerYear: '0',
+        baseApr: '0',
+        rewardSrsPerDay: '0'
+      }
     }
   },
   { promise: true, maxAge: ONE_MINUTE }
