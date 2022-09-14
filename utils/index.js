@@ -1,7 +1,10 @@
+import memoize from 'memoizee'
 import { utils } from 'ethers'
 const { parseUnits } = utils
 import moment from 'moment'
-import { pools, coins, GRAPH_URL } from '/constants'
+import { pools, coins, GRAPH_URL, GECKO_URL } from '/constants'
+import { PoolTypes } from '/constants/pools'
+const ONE_MINUTE = 6e4
 
 export * from './api'
 
@@ -56,3 +59,17 @@ export function getUpcomingThursday() {
   const ltThu = day < 4
   return now.add((ltThu ? 4 : 11) - day, 'd').startOf('day')
 }
+
+export const getCoinPrice = memoize(
+  async symbol => {
+    const coin = Object.values(coins).find(i => i.symbol == symbol && i.geckoId)
+    if (!coin) throw 'coin is not found by symbol'
+
+    const url = `${GECKO_URL}/simple/price?ids=${coin.geckoId}&vs_currencies=usd`
+    const res = await (await fetch(url)).json()
+    return res[coin.geckoId]?.usd || 0
+  },
+  { promise: true, maxAge: ONE_MINUTE }
+)
+
+export const getTokenSymbolForPoolType = poolType => (poolType === PoolTypes.ETH ? 'WETH' : poolType === PoolTypes.USD ? 'USDC' : '')
