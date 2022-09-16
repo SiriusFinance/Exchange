@@ -90,6 +90,20 @@ export const coins = {
     symbol: '4SRS',
     decimals: 18,
     address: '0xB6Df5baFdcDCE7AEb49af6172143E1942999ef14'
+  },
+  srs: {
+    id: 'srs',
+    geckoId: 'sirius-finance',
+    symbol: 'SRS',
+    decimals: 18,
+    address: '0x9448610696659de8F72e1831d392214aE1ca4838'
+  },
+  oru: {
+    id: 'oru',
+    geckoId: 'orcus-ousd',
+    symbol: 'ORU',
+    decimals: 18,
+    address: '0xCdB32eEd99AA19D39e5d6EC45ba74dC4afeC549F'
   }
 }
 export default coins
@@ -97,3 +111,5 @@ export default coins
 export const stableCoins = [coins.dai, coins.usdc, coins.usdt, coins.busd]
 
 export const stableSwapCoin = coins.srs4
+
+export const extraCoins = [coins.srs, coins.oru]

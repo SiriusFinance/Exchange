@@ -3,7 +3,8 @@ import { utils, constants, Contract } from 'ethers'
 const { parseUnits, formatUnits } = utils
 const { Zero } = constants
 import { pools, isMetaPool, isCryptoPool, isNativePool, isXTriSwapPool } from '/constants/pools'
-import { provider, srsContract, gaugeControllerContract } from '/constants/contract'
+import { coins } from '/constants/coins'
+import { provider, srsContract, gaugeControllerContract, arthRouterContract } from '/constants/contract'
 import ERC20Abi from '/constants/abis/ERC20.json'
 import metaSwapAbi from '/constants/abis/metaSwap.json'
 import cryptoMetapoolAbi from '/constants/abis/Cryptometapool.json'
@@ -162,6 +163,14 @@ export const getBaseAprData = memoize(
         rewardSrsPerDay: '0'
       }
     }
+  },
+  { promise: true, maxAge: ONE_MINUTE }
+)
+
+export const getOruPrice = memoize(
+  async () => {
+    const res = await arthRouterContract?.getAmountsOut(parseUnits('1'), [coins.oru.address, coins.usdc.address])
+    return +formatUnits(res[1], coins.usdc.decimals) || 0
   },
   { promise: true, maxAge: ONE_MINUTE }
 )
