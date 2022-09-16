@@ -2,13 +2,15 @@ import memoize from 'memoizee'
 import { utils, constants, Contract } from 'ethers'
 const { parseUnits, formatUnits } = utils
 const { Zero } = constants
+import moment from 'moment'
 import { pools, isMetaPool, isCryptoPool, isNativePool, isXTriSwapPool } from '/constants/pools'
-import { coins } from '/constants/coins'
+import { coins, extraCoins } from '/constants/coins'
 import { provider, srsContract, gaugeControllerContract, arthRouterContract } from '/constants/contract'
 import ERC20Abi from '/constants/abis/ERC20.json'
 import metaSwapAbi from '/constants/abis/metaSwap.json'
 import cryptoMetapoolAbi from '/constants/abis/Cryptometapool.json'
 // import XTriSwapAbi from '/constants/abis/XTriSwap.json'
+import liquidityGaugeAbi from '/constants/abis/LiquidityGauge.json'
 import { castTo18, getLastThursday, getCoinPrice, getSrsPrice, getTokenSymbolForPoolType } from '/utils'
 import { getSwapContract } from '/utils/contract'
 const ONE_MINUTE = 6e4
@@ -171,6 +173,74 @@ export const getOruPrice = memoize(
   async () => {
     const res = await arthRouterContract?.getAmountsOut(parseUnits('1'), [coins.oru.address, coins.usdc.address])
     return +formatUnits(res[1], coins.usdc.decimals) || 0
+  },
+  { promise: true, maxAge: ONE_MINUTE }
+)
+
+export const getExtraTokenPrice = memoize(
+  async () => {
+    const [srsPrice, oruPrice] = await Promise.all([getSrsPrice().catch(err => 0), getOruPrice().catch(err => 0)])
+    return {
+      [coins.srs.symbol]: srsPrice,
+      [coins.oru.symbol]: oruPrice
+    }
+  },
+  { promise: true, maxAge: ONE_MINUTE }
+)
+
+export const getExtraRewards = memoize(
+  async poolName => {
+    try {
+      if (!poolName) throw 'poolName is required'
+
+      const pool = pools.find(i => i.name === poolName)
+      const farmAddress = pool?.addresses?.gauge
+      if (!pool || !farmAddress) throw 'farm is not found'
+
+      const farmContract = new Contract(farmAddress, liquidityGaugeAbi, provider)
+      const rewardCountBN = await farmContract?.rewardCount()
+      const rewardCount = +formatUnits(rewardCountBN, 0)
+      if (rewardCount <= 0) return []
+
+      const rewardTokensList = await farmContract?.getRewardTokensList(0, rewardCount)
+      const tokenPrices = await getExtraTokenPrice()
+
+      const res = await Promise.all(
+        rewardTokensList.map(async address => {
+          const extraToken = extraCoins.find(i => i.address === address)
+          if (!extraToken) {
+            console.error(`error: this Extra Reward Token not defined:${address}`)
+            return {}
+          }
+
+          const { symbol, decimals } = extraToken
+          const tokenPrice = tokenPrices[symbol] || 0
+
+          const secondRate = await farmContract?.rewardData(address)
+          const isBefore = moment.unix(secondRate.periodFinish.toNumber()).isBefore()
+          const rewardRate = secondRate.rate
+          const rewardPerSecNum = isBefore ? Zero : rewardRate
+          const rewardPerSec = rewardPerSecNum.mul(parseUnits(String(tokenPrice))).div(parseUnits('1'))
+          const rewardPerYear = rewardPerSec.mul(ONE_YEAR_SECS)
+
+          return {
+            address,
+            symbol,
+            decimals,
+            price: String(tokenPrice),
+            rewardRate: formatUnits(rewardRate),
+            rewardPerSec: formatUnits(rewardPerSec),
+            rewardPerYear: formatUnits(rewardPerYear)
+          }
+        })
+      )
+
+      const extraRewards = res.filter(i => i.address)
+      return extraRewards
+    } catch (err) {
+      console.error('getExtraRewards', err)
+      return []
+    }
   },
   { promise: true, maxAge: ONE_MINUTE }
 )

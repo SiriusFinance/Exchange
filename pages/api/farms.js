@@ -1,6 +1,6 @@
 import { pools } from '/constants'
 import { fn, getUpcomingThursday } from '/utils'
-import { getBaseAprData } from '/utils/data/farm'
+import { getBaseAprData, getExtraRewards } from '/utils/data/farm'
 
 export default fn(
   async () => {
@@ -9,7 +9,7 @@ export default fn(
 
     const farms = await Promise.all(
       availablePools.map(async pool => {
-        const [res1, res2] = await Promise.all([getBaseAprData(pool.name), getBaseAprData(pool.name, upcomThu)])
+        const [res1, res2, res3] = await Promise.all([getBaseAprData(pool.name), getBaseAprData(pool.name, upcomThu), getExtraRewards(pool.name)])
         return {
           contract: pool.addresses.gauge,
           baseApr: res1.baseApr,
@@ -17,7 +17,8 @@ export default fn(
           rewardSrsPerDay: res1.rewardSrsPerDay,
           baseAprUpcom: res2.baseApr,
           rewardRateUpcom: res2.rewardRate,
-          rewardSrsPerDayUpcom: res2.rewardSrsPerDay
+          rewardSrsPerDayUpcom: res2.rewardSrsPerDay,
+          extraRewards: res3
         }
       })
     )
