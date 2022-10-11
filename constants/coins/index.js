@@ -104,6 +104,13 @@ export const coins = {
     symbol: 'ORU',
     decimals: 18,
     address: '0xCdB32eEd99AA19D39e5d6EC45ba74dC4afeC549F'
+  },
+  pusdt: {
+    id: 'pusdt',
+    geckoId: 'tether',
+    symbol: 'USDT',
+    decimals: 6,
+    address: '0xFFFFFFFF000000000000000000000001000007C0'
   }
 }
 export default coins

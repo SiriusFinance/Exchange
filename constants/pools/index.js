@@ -6,6 +6,7 @@ const NASTR_NAME = 'nASTR/ASTR Pool'
 const AVAULT_NAME = 'Avault 4Pool'
 const BAI_META_NAME = 'BAI Metapool'
 const OUSD_META_NAME = 'oUSD Metapool'
+const PUSDT_META_NAME = 'Polkadot USDT Metapool'
 
 const JPYC_META_NAME = 'JPYC Metapool'
 const WBTC_META_NAME = 'WBTC Metapool'
@@ -51,6 +52,17 @@ export const pools = [
       gauge: '0xBbabf2184FbC4DFB17207E74cdB6B1587Dc158a4'
     },
     coins: [coins.bai, ...stableCoins],
+    type: PoolTypes.USD
+  },
+  {
+    name: PUSDT_META_NAME,
+    addresses: {
+      lpToken: '0x8E12781da51480D84715ad83eE482643601d843E',
+      swap: '0x8e39e47Ca4A44D4316b88727Eb4407De877a9235',
+      deposit: '0x8277d2321CFEF47b508392C08177E05621511234',
+      gauge: '0x8dBcd190e325d141E7698f0791792FFBb310A10e'
+    },
+    coins: [coins.pusdt, ...stableCoins],
     type: PoolTypes.USD
   },
   {
@@ -117,7 +129,7 @@ export const pools = [
 
 export default pools
 
-const metaPools = [BAI_META_NAME, OUSD_META_NAME]
+const metaPools = [BAI_META_NAME, OUSD_META_NAME, PUSDT_META_NAME]
 export const isMetaPool = poolName => metaPools.includes(poolName)
 
 const cryptoPools = [JPYC_META_NAME, WBTC_META_NAME, WETH_META_NAME, WBNB_META_NAME]
