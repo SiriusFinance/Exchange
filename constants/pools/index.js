@@ -24,6 +24,16 @@ export const PoolTypes = {
 
 export const pools = [
   {
+    name: AVAULT_NAME,
+    addresses: {
+      lpToken: '0x170E2e0939317D60baCEC48d7116498c882430A8',
+      swap: '0xD8Bc543273B0E19eed34a295614963720c89f9e4',
+      gauge: '0xa6B91ddDca40137B9442b4aD7076bF319eacC59E'
+    },
+    coins: stableCoins,
+    type: PoolTypes.USD
+  },
+  {
     name: SRS4_NAME,
     addresses: {
       lpToken: '0xB6Df5baFdcDCE7AEb49af6172143E1942999ef14',
