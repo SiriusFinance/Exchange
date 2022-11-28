@@ -11,7 +11,7 @@ import metaSwapAbi from '/constants/abis/metaSwap.json'
 import cryptoMetapoolAbi from '/constants/abis/Cryptometapool.json'
 // import XTriSwapAbi from '/constants/abis/XTriSwap.json'
 import liquidityGaugeAbi from '/constants/abis/LiquidityGauge.json'
-import { castTo18, getLastThursday, getCoinPrice, getSrsPrice, getTokenSymbolForPoolType } from '/utils'
+import { castTo18, getLastThursday, getCoinPrice, getSrsPrice, getNastrWastrPrice, getTokenSymbolForPoolType } from '/utils'
 import { getSwapContract } from '/utils/contract'
 const ONE_MINUTE = 6e4
 const ONE_HOUR = 36e5
@@ -43,6 +43,10 @@ export const getLPTokenPrice = memoize(
       const lpTokenAddress = pool?.addresses?.lpToken
       const swapAddress = pool?.addresses?.swap
       if (!pool || !lpTokenAddress || !swapAddress) throw 'farm is not found'
+
+      if (poolName == "nASTR/ASTR Pool") {
+        return getNastrWastrPrice()
+      }
 
       const isMetaSwap = isMetaPool(poolName)
       const isCryptoSwap = isCryptoPool(poolName)
