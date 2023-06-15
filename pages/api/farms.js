@@ -12,6 +12,8 @@ export default fn(
         const [res1, res2, res3] = await Promise.all([getBaseAprData(pool.name), getBaseAprData(pool.name, upcomThu), getExtraRewards(pool.name)])
         return {
           contract: pool.addresses.gauge,
+          name: pool.name,
+          tvl: res1.tvl,
           baseApr: res1.baseApr,
           rewardRate: res1.rewardRate,
           rewardSrsPerDay: res1.rewardSrsPerDay,
